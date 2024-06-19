@@ -40,5 +40,6 @@ stages:
           steps:
           - download: current
             artifact: 'helloworld'
-          - script: type $(Pipeline.Workspace)/helloworld/helloworld.txt
+          - script: |
+               type "$(Pipeline.Workspace)/helloworld/helloworld.txt"
             displayName: 'Deploy Hello World'
