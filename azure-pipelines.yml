@@ -1,5 +1,9 @@
 trigger:
-- main
+  branches:
+    include:
+      - main
+      - dev
+      - qa
 
 pool:
   name: Test
@@ -29,8 +33,7 @@ stages:
   jobs:
   - deployment: DeployJob
     displayName: 'Deploy Job'
-    environment: 
-      name: 'Dev'  # The environment name
+    environment: 'Dev'  # Deploy to the 'Dev' environment
     strategy:
       runOnce:
         deploy:
