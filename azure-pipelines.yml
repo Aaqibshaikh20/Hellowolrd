@@ -26,13 +26,13 @@ stages:
         ArtifactName: 'helloworld'
       displayName: 'Publish Hello World Artifact'
 
-- stage: Deploy
-  displayName: 'Deploy Stage'
+- stage: DeployToDev
+  displayName: 'Deploy to Dev Stage'
   dependsOn: Build
-  condition: succeeded()
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/dev')))
   jobs:
   - deployment: DeployJob
-    displayName: 'Deploy Job'
+    displayName: 'Deploy to Dev Job'
     environment: 'Dev'  # Deploy to the 'Dev' environment
     strategy:
       runOnce:
@@ -40,5 +40,24 @@ stages:
           steps:
           - download: current
             artifact: 'helloworld'
-          - script: type $(Pipeline.Workspace)/helloworld/helloworld.txt
+          - script: |
+               type "$(Pipeline.Workspace)\helloworld\helloworld.txt"
+            displayName: 'Deploy Hello World'
+
+- stage: DeployToQa
+  displayName: 'Deploy to Qa Stage'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/qa'))
+  jobs:
+  - deployment: DeployJob
+    displayName: 'Deploy to Qa Job'
+    environment: 'Qa'  # Deploy to the 'Qa' environment
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'helloworld'
+          - script: |
+               type "$(Pipeline.Workspace)\helloworld\helloworld.txt"
             displayName: 'Deploy Hello World'
